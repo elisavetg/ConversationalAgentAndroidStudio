@@ -1,6 +1,5 @@
 package com.example.cbink
 
-// MainActivity.kt
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +14,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var mainActivity: ActivityMainBinding
     private lateinit var messageList: ArrayList<MessageClass>
-    private val USER = SenderType.USER
-    private val BOT = SenderType.BOT
+    private val user = SenderType.USER
+    private val bot = SenderType.BOT
 
     private val rasaService: RasaService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://941c-46-198-171-223.ngrok.io")
+            .baseUrl("https://1e12-46-198-171-223.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RasaService::class.java)
@@ -51,11 +50,11 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Please type your message", Toast.LENGTH_SHORT).show()
         } else {
             // Add the user's message to the list
-            val userMessage = MessageClass(message, USER)
+            val userMessage = MessageClass(message, user)
             messageList.add(userMessage)
             adapter.notifyItemInserted(messageList.size - 1)
 
-            // Send the user's message to Rasa using Retrofit
+            // Send the user's message to Rasa
             val messageRequest = MessageRequest("user", message)
             val call = rasaService.sendMessage(messageRequest)
 
@@ -65,10 +64,10 @@ class MainActivity : AppCompatActivity() {
                     response: Response<List<MessageResponse>>
                 ) {
                     if (response.isSuccessful) {
-                        // Add the bot's response to the list
+                        // Add the bot response to the list
                         response.body()?.let { messages ->
                             if (messages.isNotEmpty()) {
-                                val botMessageObject = MessageClass(messages[0].text, BOT)
+                                val botMessageObject = MessageClass(messages[0].text, bot)
                                 messageList.add(botMessageObject)
                                 adapter.notifyItemInserted(messageList.size - 1)
 
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                     // Handle failure (e.g., show an error message)
                     Toast.makeText(
                         this@MainActivity,
-                        "Failed to communicate with Rasa server",
+                        "Failed Rasa communication",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
